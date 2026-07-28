@@ -8,7 +8,6 @@ import codecs
 import os
 import selectors
 import socket
-import struct
 import sys
 import termios
 import tty
@@ -66,54 +65,8 @@ class TelnetFilter:
         return bytes(output)
 
 
-def connect_socks5(proxy: str, target_host: str, target_port: int) -> socket.socket:
-    proxy_host, proxy_port_text = proxy.rsplit(":", 1)
-    sock = socket.create_connection((proxy_host, int(proxy_port_text)), timeout=10)
-    sock.sendall(b"\x05\x01\x00")
-    if sock.recv(2) != b"\x05\x00":
-        raise RuntimeError("SOCKS5 proxy rejected unauthenticated connection")
-
-    try:
-        packed_host = socket.inet_aton(target_host)
-        address = b"\x01" + packed_host
-    except OSError:
-        encoded_host = target_host.encode("idna")
-        address = b"\x03" + bytes((len(encoded_host),)) + encoded_host
-
-    sock.sendall(b"\x05\x01\x00" + address + struct.pack("!H", target_port))
-    header = sock.recv(4)
-    if len(header) != 4 or header[1] != 0:
-        raise RuntimeError(f"SOCKS5 proxy connection failed: {header!r}")
-
-    address_type = header[3]
-    if address_type == 1:
-        remaining = 4 + 2
-    elif address_type == 3:
-        length = sock.recv(1)
-        remaining = length[0] + 2
-    elif address_type == 4:
-        remaining = 16 + 2
-    else:
-        raise RuntimeError("SOCKS5 proxy returned an unknown address type")
-
-    while remaining:
-        chunk = sock.recv(remaining)
-        if not chunk:
-            raise RuntimeError("SOCKS5 proxy closed during handshake")
-        remaining -= len(chunk)
-
-    sock.settimeout(None)
-    return sock
-
-
-def connect(host: str, port: int, proxy: str | None) -> socket.socket:
-    if proxy:
-        return connect_socks5(proxy, host, port)
-    return socket.create_connection((host, port), timeout=10)
-
-
-def run(host: str, port: int, proxy: str | None) -> None:
-    sock = connect(host, port, proxy)
+def run(host: str, port: int) -> None:
+    sock = socket.create_connection((host, port), timeout=10)
     sock.setblocking(False)
 
     selector = selectors.DefaultSelector()
@@ -159,15 +112,10 @@ def main() -> None:
     )
     parser.add_argument("--host", default="bbs.byr.cn")
     parser.add_argument("--port", type=int, default=23)
-    parser.add_argument(
-        "--proxy",
-        metavar="HOST:PORT",
-        help="optional SOCKS5 proxy, for example 127.0.0.1:7890",
-    )
     args = parser.parse_args()
 
     try:
-        run(args.host, args.port, args.proxy)
+        run(args.host, args.port)
     except (OSError, RuntimeError) as exc:
         print(f"连接失败：{exc}", file=sys.stderr)
         raise SystemExit(1) from exc

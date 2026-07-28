@@ -222,22 +222,17 @@ class ByrTelnetSession:
         self,
         host: str,
         port: int,
-        proxy: str | None,
         login_id: str = "guest",
     ) -> None:
         self.host = host
         self.port = port
-        self.proxy = proxy
         self.login_id = login_id
         self.child: pexpect.spawn | None = None
         self.board: str | None = None
 
     def connect(self, board: str) -> None:
         self.close()
-        nc_args = ["/usr/bin/nc", "-t"]
-        if self.proxy:
-            nc_args.extend(["-X", "5", "-x", self.proxy])
-        nc_args.extend([self.host, str(self.port)])
+        nc_args = ["/usr/bin/nc", "-t", self.host, str(self.port)]
 
         command = shlex.join(nc_args)
         child = pexpect.spawn(
@@ -279,19 +274,9 @@ class ByrTelnetSession:
             read_until_quiet(child)
         except pexpect.TIMEOUT as exc:
             child.close(force=True)
-            connection = (
-                f"SOCKS5 代理 {self.proxy}"
-                if self.proxy
-                else f"直连 {self.host}:{self.port}"
-            )
-            hint = (
-                "请确认代理地址和端口正确。"
-                if self.proxy
-                else "当前网络可能屏蔽了 23 端口；若本机代理支持 SOCKS5，"
-                "请使用 --proxy 127.0.0.1:7890（端口按实际设置修改）。"
-            )
             raise RuntimeError(
-                f"{connection} 超时，论坛没有返回登录界面。{hint}"
+                f"连接 {self.host}:{self.port} 超时，论坛没有返回登录界面。"
+                "请检查当前网络或稍后重试。"
             ) from exc
         except pexpect.EOF as exc:
             child.close(force=True)
@@ -977,11 +962,6 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--host", default="bbs.byr.cn")
     parser.add_argument("--port", type=int, default=23)
     parser.add_argument(
-        "--proxy",
-        metavar="HOST:PORT",
-        help="SOCKS5 代理，例如 127.0.0.1:7890",
-    )
-    parser.add_argument(
         "--skip-excel",
         action="store_true",
         help="本次不重建 Excel",
@@ -1029,7 +1009,7 @@ def main() -> None:
     }
     scrape_error: BaseException | None = None
     try:
-        with ByrTelnetSession(args.host, args.port, args.proxy) as session:
+        with ByrTelnetSession(args.host, args.port) as session:
             for board in args.boards:
                 counters = process_board(
                     session,

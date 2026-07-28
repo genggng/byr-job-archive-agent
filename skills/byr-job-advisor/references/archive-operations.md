@@ -3,17 +3,16 @@
 Refresh only when the user asks for newer forum data. The collector is read-only and uses the official `guest` Telnet entry.
 
 ```bash
-python3 byr_job_archive.py --skip-excel --proxy 127.0.0.1:7890
+python3 byr_job_archive.py --skip-excel
 ```
 
-Use direct access only when TCP port 23 is reachable. For a low-risk smoke test:
+For a low-risk smoke test:
 
 ```bash
 python3 byr_job_archive.py \
   --boards JobInfo \
   --max-posts 3 \
-  --skip-excel \
-  --proxy 127.0.0.1:7890
+  --skip-excel
 ```
 
 Do not request or reuse forum passwords, browser cookies, or personal credentials. Do not reset `state.json`, delete existing Markdown after a remote failure, or mark incomplete reads as complete.

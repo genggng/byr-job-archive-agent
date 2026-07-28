@@ -31,7 +31,7 @@
 
 - 使用北邮人论坛官方 `guest` Telnet 入口，不要求用户提供论坛账号、密码或浏览器 Cookie。
 - 默认主机为 `bbs.byr.cn:23`。
-- 支持直连和 SOCKS5 代理。
+- 直接连接北邮人论坛。
 - 正确处理 Telnet 协议控制字符、ANSI 终端控制序列和论坛使用的 GBK 编码。
 - 不发帖、不回帖、不修改论坛内容。
 
@@ -127,7 +127,7 @@ Excel 应具备筛选表、冻结表头、合理列宽、日期和数字格式�
 - 三个就业版面的目录反向扫描；
 - Telnet `guest` 自动登录；
 - GBK 解码、ANSI 清理和多屏正文合并；
-- 直连及 SOCKS5 代理；
+- 直接连接北邮人论坛；
 - 最近若干天回填和近期编号增量复查；
 - 中断续跑、本地快速跳过和 SHA-256 查重；
 - 单帖 Markdown 写入；
@@ -139,29 +139,22 @@ Excel 应具备筛选表、冻结表头、合理列宽、日期和数字格式�
 常用命令：
 
 ```bash
-# 通过本机 SOCKS5 代理抓取默认三个版面
-python3 byr_job_archive.py --proxy 127.0.0.1:7890
-
-# 当前网络允许访问 23 端口时直连
+# 抓取默认三个版面
 python3 byr_job_archive.py
 
 # 只抓指定版面
 python3 byr_job_archive.py \
-  --boards JobInfo Jump \
-  --proxy 127.0.0.1:7890
+  --boards JobInfo Jump
 
 # 只根据已有状态重建 Excel，不访问论坛
 python3 byr_job_archive.py --rebuild-excel
 
 # 小范围连通性和解析测试
 python3 byr_job_archive.py \
-  --max-posts 3 \
-  --proxy 127.0.0.1:7890
+  --max-posts 3
 
 # 强制复查时间范围内全部帖子
-python3 byr_job_archive.py \
-  --full-rescan \
-  --proxy 127.0.0.1:7890
+python3 byr_job_archive.py --full-rescan
 ```
 
 运行环境至少需要 Python 3.10 和 `pexpect`。如果系统默认 Python 缺少依赖，应使用已经安装 `pexpect` 的虚拟环境或 Conda 环境，不要修改脚本来绕过导入错误。
@@ -263,7 +256,7 @@ SHA-256 查重
 
 ## 当前已知限制
 
-- Telnet 23 端口在部分网络不可达，可能必须使用 SOCKS5 代理。
+- 当前网络或论坛状态异常时，Telnet 连接可能超时。
 - 访客席位可能已满，连接会被论坛暂时拒绝。
 - 论坛是终端界面，页面提示、分页布局或 ANSI 行为变化可能破坏解析。
 - 初次回填需要逐篇读取正文，速度主要受论坛响应和文章页数限制。
@@ -288,8 +281,7 @@ python3 byr_job_archive.py --help
 python3 byr_job_archive.py \
   --boards JobInfo \
   --max-posts 3 \
-  --skip-excel \
-  --proxy 127.0.0.1:7890
+  --skip-excel
 ```
 
 确认：

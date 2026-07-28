@@ -30,19 +30,9 @@ python3 -m pip install -r requirements.txt
 
 ### 2. 获取招聘信息
 
-如果当前网络可以直接访问北邮人论坛 Telnet：
-
 ```bash
 python3 byr_job_archive.py
 ```
-
-如果需要通过本机 SOCKS5 代理：
-
-```bash
-python3 byr_job_archive.py --proxy 127.0.0.1:7890
-```
-
-代理端口请按自己的软件设置修改。
 
 ### 3. 选择时间范围
 
@@ -50,13 +40,13 @@ python3 byr_job_archive.py --proxy 127.0.0.1:7890
 
 ```bash
 # 最近 3 个月
-python3 byr_job_archive.py --days 90 --proxy 127.0.0.1:7890
+python3 byr_job_archive.py --days 90
 
 # 最近 6 个月
-python3 byr_job_archive.py --days 180 --proxy 127.0.0.1:7890
+python3 byr_job_archive.py --days 180
 
 # 最近 12 个月
-python3 byr_job_archive.py --days 365 --proxy 127.0.0.1:7890
+python3 byr_job_archive.py --days 365
 ```
 
 不指定时默认获取最近 365 天。
@@ -88,10 +78,6 @@ python3 byr_job_archive.py --rebuild-excel
 请从本仓库安装 `byr-job-advisor` Skill，让 Agent 具备获取、检索北邮人论坛招聘信息并提供就业建议的能力。
 
 ## 常见问题
-
-### 连接超时
-
-当前网络可能无法访问 Telnet 23 端口。请启动支持 SOCKS5 的代理，并通过 `--proxy` 指定地址和端口。
 
 ### 访客席位已满
 
