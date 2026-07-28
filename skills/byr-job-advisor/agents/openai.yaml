@@ -1,0 +1,4 @@
+interface:
+  display_name: "北邮人招聘信息助手"
+  short_description: "检索北邮人论坛招聘归档并基于原帖证据生成可核查的就业建议"
+  default_prompt: "Use $byr-job-advisor to search the local BYR BBS job archive and give evidence-based job advice."

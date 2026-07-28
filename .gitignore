@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+.DS_Store
+.venv/
+node_modules
+outputs/
+北邮人论坛近一年归档/
+*.sqlite3
+*.sqlite3-*
+*.jsonl
+byr_telnet_guest.py
+extract_byr_articles.py
+byr_web_guest_links.py
+北邮人论坛-就业招聘筛选-*.md
+北邮人论坛-就业招聘筛选-*.pdf
