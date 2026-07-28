@@ -25,13 +25,17 @@
 需要 Python 3.10 或更高版本。
 
 ```bash
-python3 -m pip install -r requirements.txt
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
 ```
+
+依赖只会安装到当前项目的 `.venv` 中，不会影响全局 Python。以后运行工具前，先执行 `source .venv/bin/activate`。
 
 ### 2. 获取招聘信息
 
 ```bash
-python3 byr_job_archive.py
+python byr_job_archive.py
 ```
 
 ### 3. 选择时间范围
@@ -40,13 +44,13 @@ python3 byr_job_archive.py
 
 ```bash
 # 最近 3 个月
-python3 byr_job_archive.py --days 90
+python byr_job_archive.py --days 90
 
 # 最近 6 个月
-python3 byr_job_archive.py --days 180
+python byr_job_archive.py --days 180
 
 # 最近 12 个月
-python3 byr_job_archive.py --days 365
+python byr_job_archive.py --days 365
 ```
 
 不指定时默认获取最近 365 天。
@@ -70,7 +74,7 @@ Excel 中可以按公司、招聘类型、岗位类别、地点、毕业届别�
 只想重新生成 Excel、不访问论坛时：
 
 ```bash
-python3 byr_job_archive.py --rebuild-excel
+python byr_job_archive.py --rebuild-excel
 ```
 
 ## 使用方式二：安装 Agent Skill
@@ -96,7 +100,7 @@ python3 byr_job_archive.py --rebuild-excel
 ## 更多选项
 
 ```bash
-python3 byr_job_archive.py --help
+python byr_job_archive.py --help
 ```
 
 更详细的运行和恢复说明见 [北邮人论坛归档工具说明.md](北邮人论坛归档工具说明.md)。
