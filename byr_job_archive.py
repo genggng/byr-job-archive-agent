@@ -850,7 +850,7 @@ def process_board(
 
     print(
         f"\n[{board} / {BOARD_NAMES[board]}] 扫描目录"
-        f"（截止 {cutoff.isoformat()}，增量下限 {stop_number or '近一年'}）"
+        f"（截止 {cutoff.isoformat()}，增量下限 {stop_number or '所选时间范围'}）"
     )
     catalog = collect_catalog(
         session,
@@ -922,12 +922,12 @@ def process_board(
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="增量归档北邮人论坛三个就业版面近一年的帖子。"
+        description="增量归档北邮人论坛三个就业版面的招聘信息。"
     )
     parser.add_argument(
         "--output",
         type=Path,
-        default=Path(__file__).with_name("北邮人论坛近一年归档"),
+        default=Path(__file__).with_name("北邮人论坛招聘信息归档"),
         help="归档目录",
     )
     parser.add_argument(
@@ -936,7 +936,7 @@ def parse_args() -> argparse.Namespace:
         choices=sorted(BOARD_NAMES),
         default=list(BOARD_NAMES),
     )
-    parser.add_argument("--days", type=int, default=365, help="首次抓取天数")
+    parser.add_argument("--days", type=int, default=90, help="首次抓取天数（默认 90）")
     parser.add_argument(
         "--rescan-last",
         type=int,
@@ -946,7 +946,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--full-rescan",
         action="store_true",
-        help="忽略增量编号，重新检查近一年目录（内容相同不会重写）",
+        help="忽略增量编号，重新检查所选时间范围（内容相同不会重写）",
     )
     parser.add_argument(
         "--max-posts",

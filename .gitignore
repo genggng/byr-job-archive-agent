@@ -5,6 +5,7 @@ __pycache__/
 node_modules
 outputs/
 北邮人论坛近一年归档/
+北邮人论坛招聘信息归档/
 *.sqlite3
 *.sqlite3-*
 *.jsonl

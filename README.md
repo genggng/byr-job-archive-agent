@@ -18,6 +18,10 @@
 - 支持中断后继续运行，不会因为网络失败丢失已有数据；
 - 提供 Agent Skill，让 Agent 可以查找岗位、核对原帖并给出就业建议。
 
+## 快速查看成果
+
+不想等待首次归档，可以直接下载包含 4,884 条记录的[示例 Excel 招聘信息表](examples/北邮人论坛招聘索引.xlsx)，先体验筛选和查看效果。
+
 ## 使用方式一：生成 Excel 招聘信息表
 
 ### 1. 安装依赖
@@ -25,6 +29,8 @@
 需要 Python 3.10 或更高版本。
 
 ```bash
+git clone https://github.com/genggng/byr-job-archive-agent.git
+cd byr-job-archive-agent
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements.txt
@@ -38,14 +44,15 @@ python -m pip install -r requirements.txt
 python byr_job_archive.py
 ```
 
+运行时会持续显示当前版面、处理进度和新增帖子：
+
+![运行归档脚本的效果](assets/archive-example.png)
+
 ### 3. 选择时间范围
 
 `--days` 用于指定首次获取最近多少天的帖子。例如：
 
 ```bash
-# 最近 3 个月
-python byr_job_archive.py --days 90
-
 # 最近 6 个月
 python byr_job_archive.py --days 180
 
@@ -53,14 +60,14 @@ python byr_job_archive.py --days 180
 python byr_job_archive.py --days 365
 ```
 
-不指定时默认获取最近 365 天。
+不指定时默认获取最近 90 天。
 
 ### 4. 查看结果
 
 运行完成后，结果保存在：
 
 ```text
-北邮人论坛近一年归档/
+北邮人论坛招聘信息归档/
 ├── JobInfo-招聘信息专版/
 ├── Job-毕业生找工作/
 ├── Jump-跳槽就业/
@@ -82,6 +89,12 @@ python byr_job_archive.py --rebuild-excel
 请直接对 Agent 说：
 
 > **请从 https://github.com/genggng/byr-job-archive-agent 安装 `byr-job-advisor` Skill，让你具备获取、检索北邮人论坛招聘信息并提供就业建议的能力。**
+
+先按“使用方式一”运行一次归档脚本。归档完成并建立本地数据库后，Agent 就可以检索其中的招聘信息。
+
+Agent 可以根据时间、版面和岗位条件整理招聘信息，并基于原帖提供建议：
+
+![Agent 检索招聘信息的效果](assets/agent-example.png)
 
 ## 常见问题
 

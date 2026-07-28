@@ -10,6 +10,7 @@ from byr_job_store import (
     build_database,
     export_jsonl,
     get_post,
+    require_database,
     search_posts,
     split_values,
 )
@@ -141,6 +142,21 @@ class StoreTest(unittest.TestCase):
             split_values("研发 / 销售/市场 / 研究/职能"),
             ["研发", "销售/市场", "研究/职能"],
         )
+
+    def test_query_requires_database_to_be_built_first(self) -> None:
+        self.database.unlink()
+        with self.assertRaisesRegex(RuntimeError, "先运行"):
+            require_database(self.archive)
+
+    def test_query_rejects_stale_database(self) -> None:
+        state = json.loads(self.state.read_text(encoding="utf-8"))
+        state["updated_at"] = "2026-07-21T12:00:00+08:00"
+        self.state.write_text(
+            json.dumps(state, ensure_ascii=False),
+            encoding="utf-8",
+        )
+        with self.assertRaisesRegex(RuntimeError, "已经过期"):
+            require_database(self.archive)
 
 
 if __name__ == "__main__":
