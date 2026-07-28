@@ -75,7 +75,9 @@ python3 byr_job_archive.py --rebuild-excel
 
 ## 使用方式二：安装 Agent Skill
 
-请从本仓库安装 `byr-job-advisor` Skill，让 Agent 具备获取、检索北邮人论坛招聘信息并提供就业建议的能力。
+请直接对 Agent 说：
+
+> **请从 https://github.com/genggng/byr-job-archive-agent 安装 `byr-job-advisor` Skill，让你具备获取、检索北邮人论坛招聘信息并提供就业建议的能力。**
 
 ## 常见问题
 
