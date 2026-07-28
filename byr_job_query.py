@@ -17,14 +17,14 @@ from byr_job_store import (
     DATABASE_NAME,
     archive_stats,
     build_database,
-    ensure_database,
     export_jsonl,
     get_post,
+    require_database,
     search_posts,
 )
 
 
-DEFAULT_ARCHIVE = Path(__file__).with_name("北邮人论坛近一年归档")
+DEFAULT_ARCHIVE = Path(__file__).with_name("北邮人论坛招聘信息归档")
 
 
 def emit(payload: Any, *, pretty: bool = True) -> None:
@@ -93,7 +93,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 
 def _database_for(args: argparse.Namespace) -> Path:
-    return ensure_database(args.archive_dir, args.database)
+    return require_database(args.archive_dir, args.database)
 
 
 def _search_kwargs(args: argparse.Namespace) -> dict[str, Any]:
@@ -213,10 +213,18 @@ def main(argv: list[str] | None = None) -> None:
             if args.state
             else archive_dir / "state.json"
         )
-        emit(build_database(state_path, database_path))
+        try:
+            emit(build_database(state_path, database_path))
+        except (OSError, ValueError, sqlite3.Error, json.JSONDecodeError) as exc:
+            print(f"错误：无法构建查询数据库：{exc}", file=sys.stderr)
+            raise SystemExit(1) from exc
         return
 
-    database_path = _database_for(args)
+    try:
+        database_path = _database_for(args)
+    except RuntimeError as exc:
+        print(f"错误：{exc}", file=sys.stderr)
+        raise SystemExit(1) from exc
     if args.command == "search":
         emit(search_posts(database_path, **_search_kwargs(args)))
     elif args.command == "get":

@@ -1,9 +1,9 @@
 # Archive operations
 
-Refresh only when the user asks for newer forum data. The collector is read-only and uses the official `guest` Telnet entry.
+The normal first step is for the user to run the collector manually. It is read-only, uses the official `guest` Telnet entry, collects the latest 90 days by default, and builds SQLite after archiving.
 
 ```bash
-python3 byr_job_archive.py --skip-excel
+python3 byr_job_archive.py
 ```
 
 For a low-risk smoke test:
@@ -23,6 +23,8 @@ Rebuild derived outputs without network access:
 python3 byr_job_query.py index
 python3 byr_job_archive.py --rebuild-excel
 ```
+
+Run `index` before every query when SQLite is missing or stale. Query commands never build the database automatically.
 
 Use Excel rebuild only when the Codex workspace `@oai/artifact-tool` runtime is available. SQLite/JSON access does not depend on Node.js.
 

@@ -1,15 +1,36 @@
 # Query interface
 
+Build the database before using any query command:
+
+```bash
+python3 byr_job_archive.py
+```
+
+If local `state.json` and Markdown already exist, this offline command is sufficient:
+
+```bash
+python3 byr_job_query.py index
+```
+
+The query commands below never create or refresh SQLite automatically.
+
 ## CLI
 
 All commands return UTF-8 JSON.
 
 ```bash
+python3 byr_job_query.py index
 python3 byr_job_query.py stats
 python3 byr_job_query.py search --query "产品经理" --location 上海 --limit 10
 python3 byr_job_query.py get JobInfo:39728
 python3 byr_job_query.py export-jsonl --output /tmp/byr-jobs.jsonl
-python3 byr_job_query.py index
+```
+
+For a non-default archive, put `--archive-dir` before the subcommand:
+
+```bash
+python3 byr_job_query.py --archive-dir /path/to/archive index
+python3 byr_job_query.py --archive-dir /path/to/archive search --query "算法"
 ```
 
 `search` returns `total`, page `count`, normalized query parameters, and `items`. Each item contains `source_id`, `source_uri`, `markdown_path`, `capture_complete`, and `content_hash`. Add `--include-body` only for a small result page.

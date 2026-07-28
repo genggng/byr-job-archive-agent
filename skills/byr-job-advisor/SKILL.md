@@ -11,13 +11,18 @@ Use the repository's JSON query interface before reading bulk Markdown or Excel.
 
 Set `BYR_JOB_REPO` to the checkout containing `byr_job_query.py`. If this Skill is used from inside that checkout, run commands from the repository root.
 
+When calling the bundled `scripts/byr_job.py` from a separately installed Skill, either start it from the repository root or set `BYR_JOB_REPO` first. The wrapper only forwards query commands; run `byr_job_archive.py` from the repository checkout.
+
 ## Choose the workflow
 
-1. For job search or advice, run `search`, inspect promising stable keys with `get`, then answer from original bodies.
-2. For available filters or archive coverage, run `stats`.
-3. If SQLite is absent or stale, let the query CLI rebuild it automatically. Run `index` explicitly only to report rebuild results.
-4. Refresh Telnet data only when the user asks for current forum information. See [references/archive-operations.md](references/archive-operations.md).
-5. For an external local consumer, use the read-only HTTP API or JSONL export. See [references/query-api.md](references/query-api.md).
+1. Do not query before a local database has been built.
+2. By default, ask the user to run `python3 byr_job_archive.py` manually. This collects the latest 90 days and builds the local database.
+3. If `state.json` and Markdown already exist but SQLite is absent or stale, run `python3 byr_job_query.py index` explicitly.
+4. Only after archive or index succeeds, run `stats` or `search`; inspect promising stable keys with `get`, then answer from original bodies.
+5. Refresh Telnet data only when the user asks for current forum information. See [references/archive-operations.md](references/archive-operations.md).
+6. For an external local consumer, use the read-only HTTP API or JSONL export. See [references/query-api.md](references/query-api.md).
+
+Never rely on a query command to create or refresh SQLite. Missing or stale databases are expected to fail with a build-first instruction.
 
 ## Search
 

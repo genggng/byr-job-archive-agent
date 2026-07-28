@@ -320,7 +320,7 @@ def database_metadata(database_path: Path) -> dict[str, str]:
         return dict(connection.execute("SELECT key, value FROM metadata"))
 
 
-def ensure_database(
+def require_database(
     archive_dir: Path,
     database_path: Path | None = None,
 ) -> Path:
@@ -331,20 +331,30 @@ def ensure_database(
         if database_path
         else archive_dir / DATABASE_NAME
     )
-    rebuild = not database_path.exists()
-    if not rebuild:
-        try:
-            metadata = database_metadata(database_path)
-            state = load_state(state_path)
-            rebuild = (
-                metadata.get("schema_version") != str(DATABASE_SCHEMA_VERSION)
-                or metadata.get("source_updated_at")
-                != str(state.get("updated_at", ""))
-            )
-        except (OSError, sqlite3.Error, ValueError, json.JSONDecodeError):
-            rebuild = True
-    if rebuild:
-        build_database(state_path, database_path)
+    if not state_path.exists():
+        raise RuntimeError(
+            "未找到归档状态 state.json。请先运行 `python byr_job_archive.py` 获取归档。"
+        )
+    if not database_path.exists():
+        raise RuntimeError(
+            "尚未构建查询数据库。请先运行 `python byr_job_archive.py` 获取归档，"
+            "或在已有 state.json 和 Markdown 时运行 `python byr_job_query.py index`。"
+        )
+    try:
+        metadata = database_metadata(database_path)
+        state = load_state(state_path)
+    except (OSError, sqlite3.Error, ValueError, json.JSONDecodeError) as exc:
+        raise RuntimeError(
+            "无法验证查询数据库。请先运行 `python byr_job_query.py index` 重新构建。"
+        ) from exc
+    if (
+        metadata.get("schema_version") != str(DATABASE_SCHEMA_VERSION)
+        or metadata.get("source_updated_at") != str(state.get("updated_at", ""))
+    ):
+        raise RuntimeError(
+            "查询数据库尚未构建或已经过期。请先运行 "
+            "`python byr_job_query.py index`，再执行检索。"
+        )
     return database_path
 
 
